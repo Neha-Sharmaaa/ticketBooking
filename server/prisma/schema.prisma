@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  name      String?
+  role      Role      @default(USER)
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+}
+
+model Event {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?   @db.Text
+  location    String?
+  imageUrl    String?
+  startsAt    DateTime
+  endsAt      DateTime?
+  sessions    Session[]
+  createdAt   DateTime  @default(now())
+}
+
+model Session {
+  id        Int       @id @default(autoincrement())
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId   Int
+  title     String
+  startsAt  DateTime
+  endsAt    DateTime
+  seats     Seat[]
+  bookings  Booking[]
+}
+
+model Seat {
+  id        Int        @id @default(autoincrement())
+  session   Session    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId Int
+  row       String
+  number    Int
+  type      SeatType   @default(GENERAL)
+  price     Float
+  uniqueKey String     @unique
+  bookings  Booking[]
+
+  @@index([sessionId])
+}
+
+model Booking {
+  id        Int           @id @default(autoincrement())
+  user      User          @relation(fields: [userId], references: [id])
+  userId    Int
+  session   Session       @relation(fields: [sessionId], references: [id])
+  sessionId Int
+  seat      Seat          @relation(fields: [seatId], references: [id])
+  seatId    Int
+  status    BookingStatus @default(PENDING)
+  holdUntil DateTime?
+  createdAt DateTime      @default(now())
+
+  @@index([sessionId, seatId])
+  @@index([userId])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SeatType {
+  GENERAL
+  VIP
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
