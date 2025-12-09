@@ -9,12 +9,13 @@ import bookingRoutes from './routes/bookings.js';
 import adminRoutes from './routes/admin.js';
 
 const app = express();
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',');
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  cors: { origin: 'http://localhost:5173', methods: ['GET', 'POST'] }
+  cors: { origin: allowedOrigins, methods: ['GET', 'POST'] }
 });
 
-app.use(cors());
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 // Make io accessible to routes
