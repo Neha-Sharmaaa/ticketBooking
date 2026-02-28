@@ -10,7 +10,7 @@ export default function EventDetail() {
   });
 
   if (isLoading) {
-    return <div className="loading"><div className="spinner"></div></div>;
+    return <div className="loading" aria-label="Loading event"><div className="spinner"></div></div>;
   }
 
   if (!event) {

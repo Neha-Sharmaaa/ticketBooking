@@ -17,7 +17,7 @@ export default function Profile() {
   });
 
   if (isLoading) {
-    return <div className="loading"><div className="spinner"></div></div>;
+    return <div className="loading" aria-label="Loading profile"><div className="spinner"></div></div>;
   }
 
   return (
