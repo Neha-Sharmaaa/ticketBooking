@@ -83,6 +83,37 @@ async function main() {
     }
   });
 
+  const event3 = await prisma.event.create({
+    data: {
+      title: 'Global Food Festival',
+      description: 'Taste cuisines from over 50 countries in one massive outdoor event.',
+      location: 'Riverside Park',
+      imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800',
+      startsAt: new Date('2025-09-05T10:00:00'),
+      endsAt: new Date('2025-09-06T22:00:00'),
+      sessions: {
+        create: [
+          {
+            title: 'Day 1 - Asian & European Cuisines',
+            startsAt: new Date('2025-09-05T10:00:00'),
+            endsAt: new Date('2025-09-05T22:00:00'),
+            seats: {
+              create: generateSeats('s5', ['A', 'B', 'C', 'D'], 10, ['A'], 60, 30)
+            }
+          },
+          {
+            title: 'Day 2 - Americas & African Cuisines',
+            startsAt: new Date('2025-09-06T10:00:00'),
+            endsAt: new Date('2025-09-06T22:00:00'),
+            seats: {
+              create: generateSeats('s6', ['A', 'B', 'C', 'D'], 10, ['A'], 60, 30)
+            }
+          }
+        ]
+      }
+    }
+  });
+
   console.log('Seed data created successfully!');
   console.log('Admin login: admin@example.com / admin123');
   console.log('User login: user@example.com / user123');
