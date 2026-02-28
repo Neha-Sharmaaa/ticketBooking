@@ -108,8 +108,8 @@ export default function SessionBooking() {
   const total = selectedSeats.reduce((sum, s) => sum + s.price, 0);
 
   return (
-    <div className="container" style={{ padding: '2rem 0' }}>
-      <h1 style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+    <div className="container animate-fade-in-up" style={{ padding: '2rem 0' }}>
+      <h1 className="page-title" style={{ fontSize: '2rem', textAlign: 'left', marginBottom: '0.5rem' }}>
         {session?.title}
       </h1>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>

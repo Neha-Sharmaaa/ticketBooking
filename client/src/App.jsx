@@ -25,8 +25,8 @@ export default function App() {
 
   return (
     <>
-      <nav className="navbar">
-        <div className="container navbar-content">
+      <nav className="navbar glass animate-fade-in-up">
+        <div className="container navbar-content" style={{ padding: '0', maxWidth: '100%' }}>
           <Link to="/" className="logo">CultureTix</Link>
           <div className="nav-links">
             <Link to="/" className="nav-link">Events</Link>
