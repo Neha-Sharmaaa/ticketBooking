@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -12,7 +12,7 @@ model User {
   email     String    @unique
   password  String
   name      String?
-  role      Role      @default(USER)
+  role      String    @default("USER")
   bookings  Booking[]
   createdAt DateTime  @default(now())
 }
@@ -20,7 +20,7 @@ model User {
 model Event {
   id          Int       @id @default(autoincrement())
   title       String
-  description String?   @db.Text
+  description String?
   location    String?
   imageUrl    String?
   startsAt    DateTime
@@ -46,7 +46,7 @@ model Seat {
   sessionId Int
   row       String
   number    Int
-  type      SeatType   @default(GENERAL)
+  type      String     @default("GENERAL")
   price     Float
   uniqueKey String     @unique
   bookings  Booking[]
@@ -62,7 +62,7 @@ model Booking {
   sessionId Int
   seat      Seat          @relation(fields: [seatId], references: [id])
   seatId    Int
-  status    BookingStatus @default(PENDING)
+  status    String        @default("PENDING")
   holdUntil DateTime?
   createdAt DateTime      @default(now())
 
@@ -70,19 +70,5 @@ model Booking {
   @@index([userId])
 }
 
-enum Role {
-  USER
-  ADMIN
-}
 
-enum SeatType {
-  GENERAL
-  VIP
-}
-
-enum BookingStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-}
 
