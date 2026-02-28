@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getSession, getSessionSeats, holdSeats, confirmBooking } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import { useSocket } from '../hooks/useSocket';
+import PaymentModal from '../components/PaymentModal';
 
 export default function SessionBooking() {
   const { id } = useParams();
@@ -13,6 +14,8 @@ export default function SessionBooking() {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [holdData, setHoldData] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const { data: session } = useQuery({
     queryKey: ['session', id],
@@ -84,10 +87,16 @@ export default function SessionBooking() {
     });
   };
 
-  const handleConfirm = () => {
-    holdData.bookingIds.forEach((bookingId) => {
-      confirmMutation.mutate(bookingId);
-    });
+  const handlePaymentSubmit = () => {
+    setIsProcessingPayment(true);
+    setTimeout(() => {
+      setIsProcessingPayment(false);
+      setShowPaymentModal(false);
+
+      holdData.bookingIds.forEach((bookingId) => {
+        confirmMutation.mutate(bookingId);
+      });
+    }, 1500); // Simulate network delay
   };
 
   const rows = seats?.reduce((acc, seat) => {
@@ -191,11 +200,20 @@ export default function SessionBooking() {
                 <button
                   className="btn btn-primary"
                   style={{ width: '100%', marginTop: '1rem' }}
-                  onClick={handleConfirm}
+                  onClick={() => setShowPaymentModal(true)}
                   disabled={confirmMutation.isPending}
                 >
                   {confirmMutation.isPending ? 'Confirming...' : 'Confirm & Pay'}
                 </button>
+              )}
+
+              {showPaymentModal && (
+                <PaymentModal
+                  amount={total}
+                  onConfirm={handlePaymentSubmit}
+                  onCancel={() => setShowPaymentModal(false)}
+                  isProcessing={isProcessingPayment}
+                />
               )}
 
               {(holdMutation.error || confirmMutation.error) && (
