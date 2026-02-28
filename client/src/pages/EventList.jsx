@@ -9,7 +9,7 @@ export default function EventList() {
   });
 
   if (isLoading) {
-    return <div className="loading"><div className="spinner"></div></div>;
+    return <div className="loading" aria-label="Loading events"><div className="spinner"></div></div>;
   }
 
   return (
