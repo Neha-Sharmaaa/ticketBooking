@@ -82,6 +82,36 @@ async function main() {
       }
     }
   });
+  const event3 = await prisma.event.create({
+    data: {
+      title: 'National Basketball Championship',
+      description: 'Watch top college basketball teams compete for the national title in an electrifying championship.',
+      location: 'City Sports Arena',
+      imageUrl: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800',
+      startsAt: new Date('2025-09-10T16:00:00'),
+      endsAt: new Date('2025-09-10T22:00:00'),
+      sessions: {
+        create: [
+          {
+            title: 'Semi Final Match',
+            startsAt: new Date('2025-09-10T16:00:00'),
+            endsAt: new Date('2025-09-10T18:30:00'),
+            seats: {
+              create: generateSeats('s5', ['A', 'B', 'C', 'D'], 12, ['A'], 120, 60)
+            }
+          },
+          {
+            title: 'Grand Final Match',
+            startsAt: new Date('2025-09-10T19:00:00'),
+            endsAt: new Date('2025-09-10T22:00:00'),
+            seats: {
+              create: generateSeats('s6', ['A', 'B', 'C', 'D'], 12, ['A'], 150, 80)
+            }
+          }
+        ]
+      }
+    }
+  });
 
   console.log('Seed data created successfully!');
   console.log('Admin login: admin@example.com / admin123');
