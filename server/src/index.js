@@ -21,6 +21,11 @@ app.use(express.json());
 // Make io accessible to routes
 app.set('io', io);
 
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
