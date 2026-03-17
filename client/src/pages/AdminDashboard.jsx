@@ -72,12 +72,18 @@ function EventsManager() {
       queryClient.invalidateQueries(['events']);
       setShowForm(false);
       setForm({ title: '', description: '', location: '', imageUrl: '', startsAt: '', endsAt: '' });
+    },
+    onError: (error) => {
+      alert(`Error creating event: ${error.response?.data?.error || error.message}`);
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteEvent,
-    onSuccess: () => queryClient.invalidateQueries(['events'])
+    onSuccess: () => queryClient.invalidateQueries(['events']),
+    onError: (error) => {
+      alert(`Error deleting event: ${error.response?.data?.error || error.message}`);
+    }
   });
 
   return (
