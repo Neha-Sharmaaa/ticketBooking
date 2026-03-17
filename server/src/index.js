@@ -10,21 +10,21 @@ import adminRoutes from './routes/admin.js';
 
 const app = express();
 const frontendUrl = process.env.FRONTEND_URL;
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174', 'https://ticket-bookingg.vercel.app'];
 if (frontendUrl) {
   allowedOrigins.push(...frontendUrl.split(','));
 }
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  cors: { 
+  cors: {
     origin: allowedOrigins,
     methods: ['GET', 'POST'],
-    credentials: true 
+    credentials: true
   }
 });
 
-app.use(cors({ 
+app.use(cors({
   origin: allowedOrigins,
   credentials: true
 }));
