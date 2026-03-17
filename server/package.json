@@ -7,6 +7,7 @@
     "start": "node src/index.js",
     "build": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
     "db:seed": "node prisma/seed.js && node prisma/addEvent.js",
     "db:studio": "prisma studio"
   },
@@ -16,10 +17,10 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
-    "socket.io": "^4.7.2"
+    "socket.io": "^4.7.2",
+    "prisma": "^5.7.0"
   },
   "devDependencies": {
-    "prisma": "^5.7.0"
   },
   "prisma": {
   "seed": "node prisma/seed.js"
