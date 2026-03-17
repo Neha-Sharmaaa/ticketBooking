@@ -93,7 +93,7 @@ async function main() {
       sessions: {
         create: [
           {
-            title: 'Semi Final Match',
+            title: 'Semi-Final Match',
             startsAt: new Date('2025-09-10T16:00:00'),
             endsAt: new Date('2025-09-10T18:30:00'),
             seats: {
