@@ -63,15 +63,28 @@ function Dashboard() {
 function EventsManager() {
   const queryClient = useQueryClient();
   const { data: events } = useQuery({ queryKey: ['events'], queryFn: getEvents });
+  const getLocalDateTimeString = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  };
+
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ title: '', description: '', location: '', imageUrl: '', startsAt: '', endsAt: '' });
+  const [form, setForm] = useState({ 
+    title: '', 
+    description: '', 
+    location: '', 
+    imageUrl: '', 
+    startsAt: getLocalDateTimeString(), 
+    endsAt: getLocalDateTimeString() 
+  });
 
   const createMutation = useMutation({
     mutationFn: createEvent,
     onSuccess: () => {
       queryClient.invalidateQueries(['events']);
       setShowForm(false);
-      setForm({ title: '', description: '', location: '', imageUrl: '', startsAt: '', endsAt: '' });
+      setForm({ title: '', description: '', location: '', imageUrl: '', startsAt: getLocalDateTimeString(), endsAt: getLocalDateTimeString() });
     },
     onError: (error) => {
       alert(`Error creating event: ${error.response?.data?.error || error.message}`);
@@ -155,11 +168,17 @@ function EventsManager() {
 
 function SessionCreator() {
   const queryClient = useQueryClient();
+  const getLocalDateTimeString = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  };
+
   const [form, setForm] = useState({
     eventId: parseInt(window.location.pathname.split('/')[3]),
     title: '',
-    startsAt: '',
-    endsAt: '',
+    startsAt: getLocalDateTimeString(),
+    endsAt: getLocalDateTimeString(),
     rows: 'A,B,C,D,E',
     seatsPerRow: 10,
     vipRows: 'A,B',
