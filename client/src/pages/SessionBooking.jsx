@@ -115,10 +115,11 @@ export default function SessionBooking() {
               <span className="row-label">{row}</span>
               {rowSeats.map((seat) => {
                 const isSelected = selectedSeats.find((s) => s.id === seat.id);
+                const isHeld = seat.status === 'HELD';
                 return (
                   <button
                     key={seat.id}
-                    className={`seat ${seat.status.toLowerCase()} ${seat.type.toLowerCase()} ${isSelected ? 'selected' : ''}`}
+                    className={`seat ${seat.status.toLowerCase()} ${seat.type.toLowerCase()} ${(isSelected && !isHeld) ? 'selected' : ''}`}
                     onClick={() => toggleSeat(seat)}
                     disabled={seat.status !== 'AVAILABLE' || !!holdData}
                   >
@@ -180,7 +181,7 @@ export default function SessionBooking() {
 
               {!holdData ? (
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-warning"
                   style={{ width: '100%', marginTop: '1rem' }}
                   onClick={handleHold}
                   disabled={selectedSeats.length === 0 || holdMutation.isPending}
