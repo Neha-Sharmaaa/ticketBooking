@@ -49,7 +49,12 @@ function Dashboard() {
       </div>
       <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>Event Performance</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        {analytics?.events?.map((event) => (
+        {analytics?.events?.filter(event => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const endDate = new Date(event.endsAt || event.startsAt);
+          return endDate >= today;
+        }).map((event) => (
           <div key={event.id} className="card" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between' }}>
             <span>{event.title}</span>
             <span style={{ color: 'var(--text-secondary)' }}>{event.confirmedBookings} bookings</span>
@@ -147,7 +152,12 @@ function EventsManager() {
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {events?.map((event) => (
+        {events?.filter(event => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const endDate = new Date(event.endsAt || event.startsAt);
+          return endDate >= today;
+        }).map((event) => (
           <div key={event.id} className="card" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h3 style={{ fontWeight: '600' }}>{event.title}</h3>

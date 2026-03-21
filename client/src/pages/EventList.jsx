@@ -19,7 +19,12 @@ export default function EventList() {
         <p className="page-subtitle">Discover festivals, workshops, and cultural experiences</p>
       </header>
       <div className="events-grid">
-        {events?.map((event) => (
+        {events?.filter(event => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const endDate = new Date(event.endsAt || event.startsAt);
+          return endDate >= today;
+        }).map((event) => (
           <Link to={`/events/${event.id}`} key={event.id} className="card">
             <div
               className="event-card-image"
