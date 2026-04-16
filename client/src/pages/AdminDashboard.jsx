@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { getEvents, getAnalytics, getAdminBookings, createEvent, createSession, deleteEvent } from '../services/api';
+import { getEvents, getEvent, getAnalytics, getAdminBookings, createEvent, updateEvent, deleteEvent, createSession, updateSession, deleteSession } from '../services/api';
 
 function Sidebar() {
   const location = useLocation();

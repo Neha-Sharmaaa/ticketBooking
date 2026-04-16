@@ -36,6 +36,8 @@ export const createEvent = (data) => api.post('/admin/events', data).then((r) =>
 export const updateEvent = (id, data) => api.put(`/admin/events/${id}`, data).then((r) => r.data);
 export const deleteEvent = (id) => api.delete(`/admin/events/${id}`).then((r) => r.data);
 export const createSession = (data) => api.post('/admin/sessions', data).then((r) => r.data);
+export const updateSession = (id, data) => api.put(`/admin/sessions/${id}`, data).then((r) => r.data);
+export const deleteSession = (id) => api.delete(`/admin/sessions/${id}`).then((r) => r.data);
 export const getAdminBookings = () => api.get('/admin/bookings').then((r) => r.data);
 export const getAnalytics = () => api.get('/admin/analytics').then((r) => r.data);
 
