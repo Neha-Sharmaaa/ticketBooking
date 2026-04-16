@@ -64,6 +64,7 @@ function EventsManager() {
   const queryClient = useQueryClient();
   const { data: events } = useQuery({ queryKey: ['events'], queryFn: getEvents });
   const [showForm, setShowForm] = useState(false);
+  const [editingEventId, setEditingEventId] = useState(null);
   const [form, setForm] = useState({ title: '', description: '', location: '', imageUrl: '', startsAt: '', endsAt: '' });
 
   const createMutation = useMutation({
@@ -75,23 +76,60 @@ function EventsManager() {
     }
   });
 
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => updateEvent(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['events']);
+      setShowForm(false);
+      setEditingEventId(null);
+      setForm({ title: '', description: '', location: '', imageUrl: '', startsAt: '', endsAt: '' });
+    }
+  });
+
   const deleteMutation = useMutation({
     mutationFn: deleteEvent,
     onSuccess: () => queryClient.invalidateQueries(['events'])
   });
 
+  const handleEdit = (event) => {
+    setForm({
+      title: event.title || '',
+      description: event.description || '',
+      location: event.location || '',
+      imageUrl: event.imageUrl || '',
+      startsAt: event.startsAt ? new Date(event.startsAt).toISOString().slice(0, 16) : '',
+      endsAt: event.endsAt ? new Date(event.endsAt).toISOString().slice(0, 16) : ''
+    });
+    setEditingEventId(event.id);
+    setShowForm(true);
+  };
+
+  const clearForm = () => {
+    setShowForm(false);
+    setEditingEventId(null);
+    setForm({ title: '', description: '', location: '', imageUrl: '', startsAt: '', endsAt: '' });
+  };
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '1.75rem', fontWeight: '700' }}>Events</h1>
-        <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
+        <button className="btn btn-primary" onClick={() => (showForm ? clearForm() : setShowForm(true))}>
           {showForm ? 'Cancel' : 'Create Event'}
         </button>
       </div>
 
       {showForm && (
         <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
-          <form onSubmit={(e) => { e.preventDefault(); createMutation.mutate(form); }}>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            if (editingEventId) {
+              updateMutation.mutate({ id: editingEventId, data: form });
+            } else {
+              createMutation.mutate(form);
+            }
+          }}>
+            <h3 style={{ marginBottom: '1.5rem' }}>{editingEventId ? 'Edit Event' : 'New Event'}</h3>
             <div className="form-group">
               <label className="form-label">Title</label>
               <input className="form-input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
@@ -120,8 +158,8 @@ function EventsManager() {
                 <input type="datetime-local" className="form-input" value={form.endsAt} onChange={(e) => setForm({ ...form, endsAt: e.target.value })} />
               </div>
             </div>
-            <button type="submit" className="btn btn-primary" disabled={createMutation.isPending}>
-              {createMutation.isPending ? 'Creating...' : 'Create Event'}
+            <button type="submit" className="btn btn-primary" disabled={createMutation.isPending || updateMutation.isPending}>
+              {editingEventId ? (updateMutation.isPending ? 'Updating...' : 'Update Event') : (createMutation.isPending ? 'Creating...' : 'Create Event')}
             </button>
           </form>
         </div>
@@ -137,6 +175,7 @@ function EventsManager() {
               </p>
             </div>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button className="btn btn-ghost" onClick={() => handleEdit(event)}>Edit</button>
               <Link to={`/admin/events/${event.id}/sessions`} className="btn btn-secondary">Add Session</Link>
               <button className="btn btn-ghost" style={{ color: 'var(--error)' }} onClick={() => deleteMutation.mutate(event.id)}>Delete</button>
             </div>
