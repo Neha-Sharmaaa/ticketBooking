@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node --watch src/index.js",
+    "dev": "node --watch --env-file=.env src/index.js",
     "start": "node src/index.js",
+    "build": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "node prisma/seed.js",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "node prisma/seed.js && node prisma/addEvent.js",
     "db:studio": "prisma studio"
   },
   "dependencies": {
@@ -15,10 +17,12 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
-    "socket.io": "^4.7.2"
+    "socket.io": "^4.7.2",
+    "prisma": "^5.7.0"
   },
   "devDependencies": {
-    "prisma": "^5.7.0"
-  }
+  },
+  "prisma": {
+  "seed": "node prisma/seed.js"
 }
-
+}

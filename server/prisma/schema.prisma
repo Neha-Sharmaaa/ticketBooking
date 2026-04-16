@@ -58,9 +58,9 @@ model Booking {
   id        Int           @id @default(autoincrement())
   user      User          @relation(fields: [userId], references: [id])
   userId    Int
-  session   Session       @relation(fields: [sessionId], references: [id])
+  session   Session       @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   sessionId Int
-  seat      Seat          @relation(fields: [seatId], references: [id])
+  seat      Seat          @relation(fields: [seatId], references: [id], onDelete: Cascade)
   seatId    Int
   status    String        @default("PENDING")
   holdUntil DateTime?
@@ -69,6 +69,7 @@ model Booking {
   @@index([sessionId, seatId])
   @@index([userId])
 }
+
 
 
 

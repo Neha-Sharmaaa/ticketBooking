@@ -49,7 +49,12 @@ function Dashboard() {
       </div>
       <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>Event Performance</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        {analytics?.events?.map((event) => (
+        {analytics?.events?.filter(event => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const endDate = new Date(event.endsAt || event.startsAt);
+          return endDate >= today;
+        }).map((event) => (
           <div key={event.id} className="card" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between' }}>
             <span>{event.title}</span>
             <span style={{ color: 'var(--text-secondary)' }}>{event.confirmedBookings} bookings</span>
@@ -63,16 +68,32 @@ function Dashboard() {
 function EventsManager() {
   const queryClient = useQueryClient();
   const { data: events } = useQuery({ queryKey: ['events'], queryFn: getEvents });
+  const getLocalDateTimeString = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  };
+
   const [showForm, setShowForm] = useState(false);
   const [editingEventId, setEditingEventId] = useState(null);
-  const [form, setForm] = useState({ title: '', description: '', location: '', imageUrl: '', startsAt: '', endsAt: '' });
+  const [form, setForm] = useState({ 
+    title: '', 
+    description: '', 
+    location: '', 
+    imageUrl: '', 
+    startsAt: getLocalDateTimeString(), 
+    endsAt: getLocalDateTimeString() 
+  });
 
   const createMutation = useMutation({
     mutationFn: createEvent,
     onSuccess: () => {
       queryClient.invalidateQueries(['events']);
       setShowForm(false);
-      setForm({ title: '', description: '', location: '', imageUrl: '', startsAt: '', endsAt: '' });
+      setForm({ title: '', description: '', location: '', imageUrl: '', startsAt: getLocalDateTimeString(), endsAt: getLocalDateTimeString() });
+    },
+    onError: (error) => {
+      alert(`Error creating event: ${error.response?.data?.error || error.message}`);
     }
   });
 
@@ -88,7 +109,10 @@ function EventsManager() {
 
   const deleteMutation = useMutation({
     mutationFn: deleteEvent,
-    onSuccess: () => queryClient.invalidateQueries(['events'])
+    onSuccess: () => queryClient.invalidateQueries(['events']),
+    onError: (error) => {
+      alert(`Error deleting event: ${error.response?.data?.error || error.message}`);
+    }
   });
 
   const handleEdit = (event) => {
@@ -166,7 +190,12 @@ function EventsManager() {
       )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {events?.map((event) => (
+        {events?.filter(event => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const endDate = new Date(event.endsAt || event.startsAt);
+          return endDate >= today;
+        }).map((event) => (
           <div key={event.id} className="card" style={{ padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <h3 style={{ fontWeight: '600' }}>{event.title}</h3>
@@ -191,11 +220,17 @@ function EventsManager() {
 
 function SessionCreator() {
   const queryClient = useQueryClient();
+  const getLocalDateTimeString = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  };
+
   const [form, setForm] = useState({
     eventId: parseInt(window.location.pathname.split('/')[3]),
     title: '',
-    startsAt: '',
-    endsAt: '',
+    startsAt: getLocalDateTimeString(),
+    endsAt: getLocalDateTimeString(),
     rows: 'A,B,C,D,E',
     seatsPerRow: 10,
     vipRows: 'A,B',
