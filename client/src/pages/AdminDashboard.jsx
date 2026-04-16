@@ -272,6 +272,99 @@ function SessionCreator() {
   );
 }
 
+function SessionsManager() {
+  const eventId = parseInt(window.location.pathname.split('/')[3], 10);
+  const queryClient = useQueryClient();
+  const { data: event, isLoading } = useQuery({ queryKey: ['events', eventId], queryFn: () => getEvent(eventId) });
+  const [editingSessionId, setEditingSessionId] = useState(null);
+  const [form, setForm] = useState({ title: '', startsAt: '', endsAt: '' });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => updateSession(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['events', eventId]);
+      queryClient.invalidateQueries(['events']);
+      setEditingSessionId(null);
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteSession,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['events', eventId]);
+      queryClient.invalidateQueries(['events']);
+    }
+  });
+
+  const handleEdit = (session) => {
+    setEditingSessionId(session.id);
+    setForm({
+      title: session.title || '',
+      startsAt: session.startsAt ? new Date(session.startsAt).toISOString().slice(0, 16) : '',
+      endsAt: session.endsAt ? new Date(session.endsAt).toISOString().slice(0, 16) : ''
+    });
+  };
+
+  if (isLoading) return <div>Loading sessions...</div>;
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: '700' }}>Manage Sessions: {event?.title}</h1>
+        <Link to={`/admin/events`} className="btn btn-secondary">Back to Events</Link>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {event?.sessions?.map((session) => (
+          <div key={session.id} className="card" style={{ padding: '1.25rem' }}>
+            {editingSessionId === session.id ? (
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                updateMutation.mutate({ id: session.id, data: form });
+              }}>
+                <div className="form-group">
+                  <label className="form-label">Session Title</label>
+                  <input className="form-input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="form-group">
+                    <label className="form-label">Starts At</label>
+                    <input type="datetime-local" className="form-input" value={form.startsAt} onChange={(e) => setForm({ ...form, startsAt: e.target.value })} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Ends At</label>
+                    <input type="datetime-local" className="form-input" value={form.endsAt} onChange={(e) => setForm({ ...form, endsAt: e.target.value })} required />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                  <button type="submit" className="btn btn-primary" disabled={updateMutation.isPending}>Save</button>
+                  <button type="button" className="btn btn-ghost" onClick={() => setEditingSessionId(null)}>Cancel</button>
+                </div>
+              </form>
+            ) : (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ fontWeight: '600' }}>{session.title}</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                    {new Date(session.startsAt).toLocaleString()} - {new Date(session.endsAt).toLocaleString()}
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button className="btn btn-secondary" onClick={() => handleEdit(session)}>Edit</button>
+                  <button className="btn btn-ghost" style={{ color: 'var(--error)' }} onClick={() => deleteMutation.mutate(session.id)}>Delete</button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+        {(!event?.sessions || event.sessions.length === 0) && (
+          <p>No sessions found.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function BookingsManager() {
   const { data: bookings } = useQuery({ queryKey: ['adminBookings'], queryFn: getAdminBookings });
 
@@ -307,6 +400,7 @@ export default function AdminDashboard() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/events" element={<EventsManager />} />
           <Route path="/events/:id/sessions" element={<SessionCreator />} />
+          <Route path="/events/:id/sessions/manage" element={<SessionsManager />} />
           <Route path="/bookings" element={<BookingsManager />} />
         </Routes>
       </main>
