@@ -177,6 +177,9 @@ function EventsManager() {
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button className="btn btn-ghost" onClick={() => handleEdit(event)}>Edit</button>
               <Link to={`/admin/events/${event.id}/sessions`} className="btn btn-secondary">Add Session</Link>
+              {event.sessions?.length > 0 && (
+                <Link to={`/admin/events/${event.id}/sessions/manage`} className="btn btn-secondary">Edit Session</Link>
+              )}
               <button className="btn btn-ghost" style={{ color: 'var(--error)' }} onClick={() => deleteMutation.mutate(event.id)}>Delete</button>
             </div>
           </div>
