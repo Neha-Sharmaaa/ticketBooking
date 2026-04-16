@@ -7,9 +7,9 @@ async function main() {
   // Create admin user
   const adminPassword = await bcrypt.hash('admin123', 10);
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@example.com' },
-    update: {},
-    create: { email: 'admin@example.com', password: adminPassword, name: 'Admin', role: 'ADMIN' }
+    where: { email: 'neha.k@adypu.edu.in' },
+    update: { role: 'ADMIN', password: adminPassword },
+    create: { email: 'neha.k@adypu.edu.in', password: adminPassword, name: 'Admin', role: 'ADMIN' }
   });
 
   // Create test user
@@ -113,7 +113,7 @@ async function main() {
     }
   });
 
-  const event3 = await prisma.event.create({
+  const event4 = await prisma.event.create({
     data: {
       title: 'Global Food Festival',
       description: 'Taste cuisines from over 50 countries in one massive outdoor event.',
@@ -145,7 +145,7 @@ async function main() {
   });
 
   console.log('Seed data created successfully!');
-  console.log('Admin login: admin@example.com / admin123');
+  console.log('Admin login: neha.k@adypu.edu.in / admin123');
   console.log('User login: user@example.com / user123');
 }
 
