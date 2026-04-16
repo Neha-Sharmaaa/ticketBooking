@@ -57,6 +57,22 @@ router.post('/sessions', async (req, res) => {
   res.json(session);
 });
 
+// Update session
+router.put('/sessions/:id', async (req, res) => {
+  const { title, startsAt, endsAt } = req.body;
+  const session = await prisma.session.update({
+    where: { id: parseInt(req.params.id) },
+    data: { title, startsAt: new Date(startsAt), endsAt: new Date(endsAt) }
+  });
+  res.json(session);
+});
+
+// Delete session
+router.delete('/sessions/:id', async (req, res) => {
+  await prisma.session.delete({ where: { id: parseInt(req.params.id) } });
+  res.json({ success: true });
+});
+
 // Get all bookings (admin report)
 router.get('/bookings', async (req, res) => {
   const bookings = await prisma.booking.findMany({
